@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>1U.com — Prototype</title>
+<style>
+:root{
+  --bg:#161616;
+  --surface:#232323;
+  --surface-2:#2c2c2c;
+  --field:#333333;
+  --line:#3a3a3a;
+
+  --gold:#F7D95C;
+  --gold-2:#E8C43F;
+  --gold-dim:#8A742A;
+  --red:#B03A2E;
+
+  --txt:#FFFFFF;
+  --txt-2:#9C9C9C;
+  --txt-3:#6E6E6E;
+
+  --nav-h:62px;
+  --fab:54px;
+  --top-h:60px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--txt);
+  font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans","Be Vietnam Pro",system-ui,sans-serif;
+  font-size:14px;
+  overflow-x:hidden;
+}
+button{all:unset;cursor:pointer;}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:8px;}
+
+/* ================= TOP BAR ================= */
+.topbar{
+  position:sticky;top:0;z-index:30;
+  height:var(--top-h);
+  padding:0 12px;
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.burger{display:flex;flex-direction:column;gap:3px;padding:6px 4px;}
+.burger i{display:block;width:17px;height:2px;background:#CFCFCF;border-radius:2px;}
+.burger i:nth-child(2){width:12px;}
+.logo{font-size:21px;font-weight:800;letter-spacing:-.02em;margin-right:auto;}
+.logo b{color:var(--gold);}
+
+.btn-ghost{
+  padding:9px 16px;border-radius:22px;
+  border:1px solid #4A4A4A;color:#E4E4E4;
+  font-size:14px;font-weight:600;
+}
+.btn-gold{
+  padding:10px 17px;border-radius:22px;
+  background:linear-gradient(180deg,var(--gold) 0%,var(--gold-2) 100%);
+  color:#241E05;font-size:14px;font-weight:800;
+}
+.reg-wrap{position:relative;}
+.reg-badge{
+  position:absolute;top:-9px;right:-4px;
+  background:var(--red);color:#fff;
+  font-size:9px;font-weight:800;letter-spacing:.02em;
+  padding:2px 6px;border-radius:8px 8px 8px 2px;
+  white-space:nowrap;
+}
+
+/* member top bar */
+.balance{
+  margin-left:auto;
+  display:flex;align-items:center;gap:7px;
+  background:var(--surface);border:1px solid var(--line);
+  padding:7px 12px;border-radius:20px;
+}
+.balance .amt{font-weight:700;font-size:14px;color:var(--gold);letter-spacing:.01em;}
+.balance .rf{width:15px;height:15px;color:var(--txt-2);}
+.avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--surface-2);border:1px solid var(--line);
+  display:grid;place-items:center;color:#BDBDBD;flex:none;
+}
+.avatar svg{width:19px;height:19px;}
+
+[data-auth="guest"] .only-member{display:none;}
+[data-auth="member"] .only-guest{display:none;}
+
+/* ================= CATEGORY RAIL ================= */
+.rail{
+  display:flex;gap:14px;overflow-x:auto;
+  padding:12px 14px;
+  scrollbar-width:none;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.rail::-webkit-scrollbar{display:none;}
+.cat{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:56px;}
+.cat .ic{
+  width:46px;height:46px;border-radius:14px;
+  background:linear-gradient(160deg,#3a3a3a,#262626);
+  border:1px solid #414141;
+  display:grid;place-items:center;color:var(--gold);
+}
+.cat .ic svg{width:24px;height:24px;}
+.cat span{font-size:10.5px;color:var(--txt-2);white-space:nowrap;}
+.cat[aria-current="true"] .ic{
+  background:linear-gradient(160deg,#5a4a18,#332a0d);
+  border-color:var(--gold-dim);
+  box-shadow:0 0 0 1px rgba(247,217,92,.25);
+}
+.cat[aria-current="true"] span{color:var(--gold);}
+
+/* ================= VIEWS ================= */
+.view{display:none;padding:16px 14px 26px;min-height:46vh;}
+.view.is-active{display:block;}
+.placeholder{
+  border:1px dashed #454545;border-radius:14px;
+  padding:38px 18px;text-align:center;color:var(--txt-3);
+  background:rgba(255,255,255,.015);
+  font-size:13px;line-height:1.7;
+}
+.placeholder strong{display:block;color:#B9B9B9;font-size:15px;margin-bottom:6px;}
+
+.copyright{
+  text-align:center;color:#5B5B5B;font-size:11.5px;
+  padding:18px 20px calc(var(--nav-h) + 40px);
+}
+
+/* ================= BOTTOM NAV ================= */
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:40;
+  padding:0 10px calc(9px + env(safe-area-inset-bottom));}
+.bottom-nav__bar{
+  position:relative;height:var(--nav-h);
+  display:grid;grid-template-columns:repeat(5,1fr);align-items:center;
+  border-radius:20px;
+  background:linear-gradient(180deg,#2b2b2b 0%,#1d1d1d 100%);
+  border:1px solid #383838;
+  box-shadow:0 -3px 20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.nav-item{
+  height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:5px;
+  color:#D8D8D8;transition:color .18s ease;
+}
+.nav-item svg{width:22px;height:22px;display:block;transition:transform .18s ease;}
+.nav-item .lbl{font-size:11.5px;font-weight:600;line-height:1;white-space:nowrap;}
+.nav-item[aria-selected="true"]{color:var(--gold);}
+.nav-item:active svg{transform:scale(.9);}
+.nav-item--center{justify-content:flex-end;padding-bottom:7px;gap:0;}
+.nav-item--center .fab{
+  position:absolute;top:calc(var(--fab) / -2 + 4px);left:50%;
+  transform:translateX(-50%);
+  width:var(--fab);height:var(--fab);border-radius:50%;
+  display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 25%,#FFF0B4 0%,var(--gold) 45%,var(--gold-2) 100%);
+  box-shadow:0 0 0 5px #1d1d1d,0 6px 18px rgba(247,217,92,.35);
+  transition:transform .2s cubic-bezier(.34,1.4,.64,1);
+}
+.nav-item--center:active .fab{transform:translateX(-50%) scale(.93);}
+.nav-item--center .fab svg{width:27px;height:27px;color:#241E05;transform:none;}
+
+/* ================= LOGIN SHEET ================= */
+.mask{
+  position:fixed;inset:0;z-index:60;
+  background:rgba(0,0,0,.6);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding-top:calc(var(--top-h) + 68px);
+  opacity:0;pointer-events:none;transition:opacity .22s ease;
+}
+.mask.is-open{opacity:1;pointer-events:auto;}
+.sheet{
+  width:100%;max-width:520px;
+  background:#252525;
+  border-radius:20px 20px 0 0;
+  padding:22px 20px 34px;
+  min-height:calc(100vh - var(--top-h) - 68px);
+  transform:translateY(24px);transition:transform .24s ease;
+  position:relative;
+}
+.mask.is-open .sheet{transform:translateY(0);}
+.sheet-close{
+  position:absolute;top:16px;right:16px;
+  width:32px;height:32px;border-radius:50%;
+  background:#3A3A3A;display:grid;place-items:center;color:#D0D0D0;
+}
+.sheet-close svg{width:15px;height:15px;}
+
+.sheet h2{
+  margin:14px 0 22px;text-align:center;
+  font-size:19px;font-weight:800;line-height:1.45;
+}
+.sheet h2 em{font-style:normal;color:var(--gold);display:block;margin-top:2px;}
+
+/* steps */
+.steps{display:flex;align-items:flex-start;margin:0 4px 26px;}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px;position:relative;}
+.step .dot{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--gold);color:#241E05;
+  font-size:13px;font-weight:800;
+  display:grid;place-items:center;
+}
+.step .dot.gift{background:none;font-size:24px;line-height:1;width:auto;height:26px;}
+.step .cap{font-size:12px;color:#DADADA;text-align:center;line-height:1.3;}
+.step .cap b{color:var(--gold);font-weight:700;}
+.step::before,.step::after{
+  content:"";position:absolute;top:12px;height:3px;background:#3E3E3E;border-radius:2px;
+}
+.step::before{left:0;right:50%;margin-right:18px;}
+.step::after{left:50%;right:0;margin-left:18px;}
+.step:first-child::before,.step:last-child::after{display:none;}
+.step.done::after{background:var(--gold);}
+
+/* segmented */
+.seg{
+  display:grid;grid-template-columns:1fr 1fr;
+  background:#2E2E2E;border-radius:14px;padding:5px;margin-bottom:14px;
+}
+.seg button{
+  padding:13px 0;text-align:center;border-radius:11px;
+  font-size:15px;font-weight:700;color:#8F8F8F;
+  transition:background .18s ease,color .18s ease;
+}
+.seg button[aria-selected="true"]{background:#3E3E3E;color:#fff;}
+
+/* fields */
+.field{
+  display:flex;align-items:center;gap:11px;
+  background:var(--field);border-radius:14px;
+  padding:0 14px;height:56px;margin-bottom:12px;
+}
+.field .lead{width:21px;height:21px;color:#B5B5B5;flex:none;}
+.field .cc{font-size:15px;color:#E6E6E6;font-weight:600;}
+.field .sep{width:1px;height:22px;background:#4C4C4C;}
+.field input{
+  all:unset;flex:1;min-width:0;
+  font-size:16px;color:#fff;letter-spacing:.02em;
+  font-family:inherit;
+}
+.field input::placeholder{color:#7A7A7A;letter-spacing:normal;}
+.field .tail{
+  width:24px;height:24px;border-radius:50%;
+  display:grid;place-items:center;color:#8E8E8E;flex:none;
+}
+.field .tail svg{width:16px;height:16px;}
+
+.forgot{
+  display:block;text-align:right;
+  font-size:13.5px;color:#C4C4C4;margin:2px 2px 20px;
+}
+.submit{
+  display:block;width:100%;text-align:center;
+  padding:17px 0;border-radius:30px;
+  background:linear-gradient(180deg,var(--gold) 0%,var(--gold-2) 100%);
+  color:#241E05;font-size:17px;font-weight:800;
+}
+.or{
+  display:flex;align-items:center;gap:14px;
+  color:var(--txt-2);font-size:13.5px;margin:24px 4px 20px;
+}
+.or::before,.or::after{content:"";flex:1;height:1px;background:#3C3C3C;}
+.social{display:flex;justify-content:center;}
+.social button{
+  width:56px;height:56px;border-radius:50%;
+  border:1px solid #4A4A4A;display:grid;place-items:center;
+}
+.social svg{width:26px;height:26px;}
+
+
+/* ================= LEFT DRAWER ================= */
+.dr-mask{
+  position:fixed;inset:0;z-index:54;background:rgba(0,0,0,.6);
+  opacity:0;pointer-events:none;transition:opacity .22s ease;
+}
+.dr-mask.is-open{opacity:1;pointer-events:auto;}
+.drawer{
+  position:fixed;top:0;left:0;bottom:0;z-index:55;
+  width:min(90%,420px);
+  background:#1B1B1B;border-right:1px solid #333;
+  transform:translateX(-100%);transition:transform .26s cubic-bezier(.3,.8,.4,1);
+  display:flex;flex-direction:column;
+}
+.drawer.is-open{transform:translateX(0);}
+
+.dr-top{
+  display:flex;align-items:center;gap:9px;
+  padding:12px 12px;border-bottom:1px solid #2C2C2C;flex:none;
+}
+.dr-top .logo{font-size:19px;}
+.dr-close{
+  flex:none;width:36px;height:36px;border-radius:50%;
+  background:#3A3A3A;display:grid;place-items:center;color:#D0D0D0;
+}
+.dr-close svg{width:16px;height:16px;}
+
+.dr-body{flex:1;overflow-y:auto;padding:12px 12px 28px;scrollbar-width:none;}
+.dr-body::-webkit-scrollbar{display:none;}
+
+/* promo banners */
+.dr-banners{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.dr-banner{
+  height:78px;border-radius:12px;padding:11px;
+  display:flex;align-items:center;
+  font-size:14px;font-weight:900;letter-spacing:.02em;color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,.5);position:relative;overflow:hidden;
+}
+.dr-banner span{position:relative;z-index:2;max-width:66%;line-height:1.15;}
+.dr-banner .art{position:absolute;right:4px;bottom:2px;font-size:38px;opacity:.95;}
+.dr-banner.aff{background:linear-gradient(120deg,#1E5B2E,#0E2E17);}
+.dr-banner.pro{background:linear-gradient(120deg,#5A4212,#2A1E08);}
+
+/* search */
+.dr-search{
+  display:flex;align-items:center;gap:11px;height:52px;
+  background:#262626;border:1px solid #333;border-radius:12px;
+  padding:0 15px;margin-bottom:12px;
+}
+.dr-search svg{width:20px;height:20px;color:var(--txt-2);flex:none;}
+.dr-search input{all:unset;flex:1;min-width:0;font-size:15px;color:#fff;font-family:inherit;}
+.dr-search input::placeholder{color:#7A7A7A;}
+
+/* menu rows */
+.dr-group{margin-bottom:9px;}
+.dr-row{
+  display:flex;align-items:center;gap:13px;width:100%;
+  height:54px;padding:0 15px;border-radius:12px;
+  background:#262626;border:1px solid #2F2F2F;
+  color:#E4E4E4;font-size:15px;font-weight:600;
+  position:relative;overflow:hidden;
+}
+.dr-row .ic{width:22px;height:22px;color:#C2C2C2;flex:none;}
+.dr-row .lb{flex:1;text-align:left;min-width:0;}
+.dr-row .cv{width:19px;height:19px;color:#8E8E8E;flex:none;transition:transform .2s ease;}
+.dr-row .go{
+  width:26px;height:26px;border-radius:50%;background:#333;
+  display:grid;place-items:center;color:#A8A8A8;flex:none;
+}
+.dr-row .go svg{width:13px;height:13px;}
+
+.dr-group.is-active > .dr-row{
+  background:linear-gradient(90deg,#3A3012 0%,#262626 60%);
+  border-color:var(--gold-dim);
+}
+.dr-group.is-active > .dr-row::before{
+  content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;
+  background:var(--gold);border-radius:0 3px 3px 0;
+}
+.dr-group.is-active > .dr-row .lb,
+.dr-group.is-active > .dr-row .ic{color:var(--gold);}
+
+
+/* jackpot list */
+.dr-jp-title{
+  display:flex;align-items:center;gap:7px;
+  margin:20px 0 12px;font-size:16px;font-weight:800;color:#F0E6C8;
+}
+.dr-jp{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:#262626;border:1px solid #2F2F2F;border-radius:12px;
+  padding:10px 13px;margin-bottom:9px;
+}
+.dr-jp .th{
+  width:58px;height:58px;border-radius:9px;flex:none;
+  display:grid;place-items:center;font-size:26px;
+  background:linear-gradient(140deg,#E9F5E4,#CFE8C6);
+}
+.dr-jp .meta{flex:1;min-width:0;text-align:left;}
+.dr-jp .amt{font-size:15px;font-weight:800;color:var(--gold);}
+.dr-jp .gm{font-size:14px;font-weight:600;color:#E4E4E4;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dr-jp .usr{font-size:12px;color:var(--txt-3);}
+
+/* ================= CASINO HOME ================= */
+#view-casino{padding:0 0 26px;}
+
+/* activity rail */
+.cs-acts{display:flex;gap:6px;overflow-x:auto;padding:12px 12px 10px;scrollbar-width:none;}
+.cs-acts::-webkit-scrollbar{display:none;}
+.cs-act{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.cs-act .ic{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(160deg,#3A3A3A,#242424);
+  border:1px solid #444;display:grid;place-items:center;font-size:21px;
+}
+.cs-act span{font-size:10.5px;color:#C9C9C9;text-align:center;line-height:1.25;}
+
+/* banner */
+.cs-banner{position:relative;margin:2px 12px 0;}
+.cs-banner .slide{
+  height:150px;border-radius:16px;
+  background:linear-gradient(120deg,#F3F3F3 0%,#FFFFFF 55%,#E9E9E9 100%);
+  display:grid;place-items:center;
+  font-size:52px;font-weight:900;color:#D8402F;letter-spacing:-.03em;
+  border:1px solid #3A3A3A;
+}
+.cs-banner .dots{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:flex;gap:5px;}
+.cs-banner .dots i{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,.28);display:block;}
+.cs-banner .dots i.on{background:var(--gold);width:14px;border-radius:3px;}
+
+/* marquee */
+.cs-notice{
+  display:flex;align-items:center;gap:10px;margin:12px 12px 0;
+  background:var(--surface);border:1px solid #333;border-radius:20px;
+  height:40px;padding:0 14px;overflow:hidden;
+}
+.cs-notice svg{width:18px;height:18px;color:var(--gold);flex:none;}
+.cs-notice .track{flex:1;overflow:hidden;}
+.cs-notice .track p{
+  margin:0;white-space:nowrap;font-size:13px;color:#C9C9C9;
+  animation:cs-scroll 16s linear infinite;
+}
+@keyframes cs-scroll{from{transform:translateX(100%);}to{transform:translateX(-100%);}}
+
+/* big wins */
+.cs-wins{
+  margin:12px 12px 0;padding:13px;border-radius:16px;
+  background:linear-gradient(180deg,#2A2519 0%,#221F19 100%);
+  border:1px solid #4A3F1E;
+}
+.cs-wins h3{margin:0 0 11px;font-size:14px;font-weight:800;letter-spacing:.02em;color:#F0E6C8;}
+.cs-wins .row{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;}
+.cs-wins .row::-webkit-scrollbar{display:none;}
+.cs-win{
+  flex:none;width:210px;display:flex;gap:10px;align-items:center;
+  background:rgba(0,0,0,.35);border:1px solid #3E3722;border-radius:11px;padding:8px;
+}
+.cs-win .th{
+  width:52px;height:44px;border-radius:7px;flex:none;
+  background:linear-gradient(135deg,#4A2B2B,#1E1414);
+  display:grid;place-items:center;font-size:18px;
+}
+.cs-win .meta{min-width:0;}
+.cs-win .amt{font-size:14px;font-weight:800;color:var(--gold);}
+.cs-win .gm{font-size:12.5px;color:#E4E4E4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cs-win .usr{font-size:11.5px;color:var(--txt-3);}
+
+/* category rail */
+.cs-cats{display:flex;gap:2px;overflow-x:auto;padding:16px 12px 12px;scrollbar-width:none;}
+.cs-cats::-webkit-scrollbar{display:none;}
+.cs-cat{flex:none;width:72px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.cs-cat .emo{font-size:29px;line-height:1;filter:grayscale(.35) opacity(.75);transition:filter .2s ease;}
+.cs-cat span{font-size:13px;color:#A8A8A8;font-weight:600;white-space:nowrap;}
+.cs-cat[aria-pressed="true"] .emo{filter:none;}
+.cs-cat[aria-pressed="true"] span{color:var(--gold);}
+
+/* section header */
+.cs-sec{display:flex;align-items:center;gap:9px;padding:4px 12px 12px;}
+.cs-sec .fire{font-size:19px;}
+.cs-sec h3{margin:0;font-size:17px;font-weight:800;flex:1;}
+.cs-all{
+  padding:7px 15px;border-radius:16px;border:1px solid #4A4A4A;
+  font-size:12.5px;font-weight:700;color:#DCDCDC;letter-spacing:.03em;
+}
+.cs-arw{
+  width:32px;height:32px;border-radius:50%;border:1px solid #4A4A4A;
+  display:grid;place-items:center;color:#C2C2C2;flex:none;
+}
+.cs-arw svg{width:15px;height:15px;}
+
+/* game grid */
+.cs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 12px;}
+.cs-game{display:block;}
+.cs-thumb{
+  position:relative;aspect-ratio:1/1;border-radius:12px;overflow:hidden;
+  display:grid;place-items:center;font-size:30px;
+  border:1px solid #3A3A3A;
+}
+.cs-new{
+  position:absolute;top:0;left:0;z-index:2;
+  background:linear-gradient(135deg,#3FBF6A,#219150);
+  color:#fff;font-size:9.5px;font-weight:800;font-style:italic;
+  padding:3px 10px 3px 6px;border-radius:12px 0 12px 0;
+}
+.cs-play{
+  position:absolute;top:7px;right:7px;z-index:2;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(216,64,47,.9);display:grid;place-items:center;
+}
+.cs-play svg{width:10px;height:10px;color:#fff;}
+.cs-jp{
+  position:absolute;left:6px;right:6px;bottom:6px;z-index:2;
+  background:linear-gradient(180deg,#8E1D14,#5E120C);
+  border:1px solid var(--gold);border-radius:11px;
+  text-align:center;padding:4px 2px;
+  font-size:11.5px;font-weight:800;color:var(--gold);
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+}
+.cs-maint{
+  position:absolute;inset:0;z-index:3;
+  background:rgba(10,10,10,.72);display:grid;place-items:center;
+  color:#E4E4E4;font-size:12.5px;font-weight:700;text-align:center;padding:0 6px;
+}
+.cs-game .nm{
+  display:block;margin-top:7px;font-size:13px;color:#DCDCDC;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* floating widgets */
+.cs-float{
+  position:fixed;right:10px;bottom:calc(var(--nav-h) + 26px);z-index:35;
+  display:flex;flex-direction:column;gap:10px;align-items:flex-end;
+}
+.cs-cs{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(160deg,#4A3A2A,#2A2018);
+  border:1px solid #5A4A2A;display:grid;place-items:center;font-size:24px;
+  box-shadow:0 4px 14px rgba(0,0,0,.5);
+}
+.cs-gift{
+  width:74px;padding:6px;border-radius:14px;text-align:center;
+  background:linear-gradient(180deg,#3A2E14,#241C0C);
+  border:1px solid var(--gold-dim);box-shadow:0 4px 14px rgba(0,0,0,.5);
+}
+.cs-gift .hr{font-size:9.5px;font-weight:800;color:#241E05;background:var(--gold);
+  border-radius:8px;padding:1px 0;margin-bottom:4px;}
+.cs-gift .em{font-size:22px;line-height:1.1;}
+.cs-gift .tx{font-size:9.5px;font-weight:700;color:var(--gold);line-height:1.25;margin-top:2px;}
+
+@media (max-width:360px){
+  .cs-grid{gap:8px;}
+  .cs-game .nm{font-size:12px;}
+  .cs-jp{font-size:10.5px;}
+}
+
+/* ================= SPORTSBOOK ================= */
+#view-sports{padding:0 0 26px;}
+.sb-card{
+  background:var(--surface);border:1px solid #333;
+  border-radius:16px;margin:12px 12px 0;overflow:hidden;
+}
+
+/* filter chips */
+.sb-filters{display:flex;gap:8px;overflow-x:auto;padding:12px 12px 4px;scrollbar-width:none;}
+.sb-filters::-webkit-scrollbar{display:none;}
+.sb-ic{
+  flex:none;width:42px;height:42px;border-radius:50%;
+  border:1px solid #3E3E3E;background:var(--surface);
+  display:grid;place-items:center;color:#C2C2C2;
+}
+.sb-ic svg{width:20px;height:20px;}
+.sb-ic[aria-pressed="true"]{
+  background:linear-gradient(160deg,#5a4a18,#3a2f0d);
+  border-color:var(--gold-dim);color:var(--gold);
+}
+.sb-pill{
+  flex:none;padding:0 20px;height:42px;display:grid;place-items:center;
+  border-radius:21px;border:1px solid #3E3E3E;background:var(--surface);
+  color:#DCDCDC;font-size:14.5px;font-weight:600;white-space:nowrap;
+}
+.sb-pill[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#241E05;}
+
+/* sport type row */
+.sb-sports{display:flex;gap:4px;overflow-x:auto;padding:10px 12px 12px;scrollbar-width:none;}
+.sb-sports::-webkit-scrollbar{display:none;}
+.sb-sport{flex:none;display:flex;align-items:flex-start;gap:3px;padding:2px 8px;border-radius:12px;}
+.sb-sport .emo{font-size:32px;line-height:1;}
+.sb-sport .cnt{font-size:12px;color:var(--txt-2);font-weight:600;padding-top:2px;}
+.sb-sport[aria-pressed="true"]{background:rgba(247,217,92,.1);}
+.sb-sport[aria-pressed="true"] .cnt{color:var(--gold);}
+
+/* featured carousel */
+.sb-feat{display:flex;gap:12px;overflow-x:auto;padding:14px 12px 4px;scrollbar-width:none;scroll-snap-type:x mandatory;}
+.sb-feat::-webkit-scrollbar{display:none;}
+.sb-feat-card{
+  flex:none;width:86%;max-width:340px;scroll-snap-align:start;
+  background:var(--surface);border:1px solid #333;border-radius:16px;padding:14px;
+}
+.sb-feat-top{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+.sb-feat-top .t{font-size:14px;color:var(--txt-2);font-weight:600;flex:none;}
+.sb-feat-top .lg{
+  font-size:14px;font-weight:600;color:#EDEDED;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;
+}
+.sb-count{
+  flex:none;background:var(--gold);color:#241E05;
+  font-size:12px;font-weight:800;padding:3px 8px;border-radius:8px;
+}
+.sb-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;text-align:center;margin-bottom:12px;}
+.sb-vs .crest{font-size:26px;line-height:1;}
+.sb-vs .tm{font-size:14px;font-weight:600;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-vs .mid{font-size:16px;font-weight:800;color:#EDEDED;}
+.sb-vs .mid small{display:block;font-size:12.5px;font-weight:500;color:var(--txt-2);margin-top:20px;}
+.sb-feat-odds{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* search bar */
+.sb-search{display:flex;gap:10px;padding:16px 12px 4px;align-items:center;}
+.sb-search .box{
+  flex:1;display:flex;align-items:center;gap:10px;height:48px;
+  background:var(--surface);border:1px solid #333;border-radius:24px;padding:0 16px;
+}
+.sb-search .box svg{width:19px;height:19px;color:var(--txt-2);flex:none;}
+.sb-search input{all:unset;flex:1;min-width:0;font-size:15px;color:#fff;font-family:inherit;}
+.sb-search input::placeholder{color:#7A7A7A;}
+.sb-search .tool{
+  flex:none;width:48px;height:48px;border-radius:50%;
+  background:var(--surface);border:1px solid #333;
+  display:grid;place-items:center;color:#C2C2C2;
+}
+.sb-search .tool svg{width:19px;height:19px;}
+
+/* league accordion */
+.sb-league-head{
+  display:flex;align-items:center;gap:11px;padding:14px;
+  border-bottom:1px solid #313131;
+}
+.sb-star{
+  flex:none;width:30px;height:30px;border-radius:50%;
+  border:1px solid #4A4A4A;display:grid;place-items:center;color:#6E6E6E;
+}
+.sb-star svg{width:16px;height:16px;}
+.sb-star[aria-pressed="true"]{color:var(--gold);border-color:var(--gold-dim);}
+.sb-league-logo{
+  flex:none;width:26px;height:26px;border-radius:50%;
+  display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;
+}
+.sb-league-head .nm{flex:1;font-size:15px;font-weight:700;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-chev{flex:none;width:20px;height:20px;color:#9C9C9C;transition:transform .2s ease;}
+.sb-card.is-collapsed .sb-chev{transform:rotate(180deg);}
+.sb-card.is-collapsed .sb-match{display:none;}
+
+/* match block */
+.sb-match{padding:12px 14px 10px;border-bottom:1px solid #2C2C2C;}
+.sb-match:last-child{border-bottom:none;}
+.sb-grid{display:grid;grid-template-columns:minmax(0,1.35fr) 1fr 1fr 1fr;gap:7px;align-items:center;}
+.sb-period{
+  justify-self:start;padding:5px 11px;border-radius:14px;
+  border:1px solid #4A4A4A;font-size:12.5px;font-weight:600;color:#DCDCDC;
+}
+.sb-mk{text-align:center;font-size:12.5px;color:var(--txt-2);}
+.sb-teams{grid-column:1;grid-row:2 / span 2;align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:14px;}
+.sb-team{display:flex;align-items:center;gap:7px;}
+.sb-team .fl{font-size:15px;flex:none;}
+.sb-team .nm{font-size:14px;font-weight:600;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-card-y,.sb-card-r{
+  flex:none;font-size:10px;font-weight:800;color:#fff;
+  min-width:14px;height:16px;border-radius:3px;display:grid;place-items:center;padding:0 3px;
+}
+.sb-card-y{background:#E0A800;}
+.sb-card-r{background:#D8402F;}
+.sb-score{flex:none;font-size:15px;font-weight:700;color:#EDEDED;width:16px;text-align:right;}
+
+/* odds cells */
+.sb-odd{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  height:56px;border-radius:11px;
+  background:#2E2E2E;border:1px solid #3A3A3A;
+  position:relative;overflow:hidden;transition:background .15s ease;
+}
+.sb-odd .line{font-size:12px;color:var(--txt-2);}
+.sb-odd .val{font-size:15.5px;font-weight:800;color:#fff;letter-spacing:.01em;}
+.sb-odd:active{background:#3A3A3A;}
+.sb-odd.is-on{background:linear-gradient(180deg,var(--gold) 0%,var(--gold-2) 100%);border-color:var(--gold);}
+.sb-odd.is-on .line,.sb-odd.is-on .val{color:#241E05;}
+.sb-odd.is-lock{background:#282828;border-color:#333;}
+.sb-odd.is-lock svg{width:17px;height:17px;color:#6E6E6E;}
+.sb-odd.up{background:rgba(46,160,88,.14);border-color:rgba(46,160,88,.35);}
+.sb-odd.down{background:rgba(216,64,47,.14);border-color:rgba(216,64,47,.35);}
+.sb-odd.up::after,.sb-odd.down::after{
+  content:"";position:absolute;border-style:solid;
+}
+.sb-odd.up::after{top:0;right:0;border-width:0 9px 9px 0;border-color:transparent #2EA058 transparent transparent;}
+.sb-odd.down::after{bottom:0;right:0;border-width:9px 9px 0 0;border-color:#D8402F transparent transparent transparent;}
+
+.sb-draw{grid-column:4;}
+
+/* match footer */
+.sb-foot{display:flex;align-items:center;gap:9px;margin-top:10px;}
+.sb-more{
+  background:rgba(247,217,92,.13);color:var(--gold);
+  font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:12px;
+  display:flex;align-items:center;gap:3px;
+}
+.sb-more svg{width:13px;height:13px;}
+.sb-dots{margin-left:auto;display:flex;gap:5px;align-items:center;}
+.sb-dots i{width:6px;height:6px;border-radius:50%;background:#4A4A4A;display:block;}
+.sb-dots i.on{background:var(--gold);}
+
+@media (max-width:360px){
+  .sb-grid{gap:5px;}
+  .sb-odd .val{font-size:14px;}
+  .sb-team .nm{font-size:13px;}
+}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body data-auth="guest">
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <button class="burger" aria-label="Menu"><i></i><i></i><i></i></button>
+  <div class="logo">1<b>U</b>.com</div>
+
+  <!-- guest -->
+  <button class="btn-ghost only-guest" data-open-login>Đăng nhập</button>
+  <span class="reg-wrap only-guest">
+    <span class="reg-badge">FREE ₫3.000</span>
+    <button class="btn-gold" data-open-login data-tab-target="register">Đăng ký</button>
+  </span>
+
+  <!-- member -->
+  <div class="balance only-member">
+    <span class="amt">₫960,725.10</span>
+    <svg class="rf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+  </div>
+  <div class="avatar only-member">
+    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c0-3.5 3.4-5.8 7.5-5.8s7.5 2.3 7.5 5.8c0 .6-.4 1-1 1H5.5c-.6 0-1-.4-1-1Z"/></svg>
+  </div>
+</header>
+
+<!-- ============ VIEWS ============ -->
+<section class="view is-active" id="view-casino">
+  <div class="cs-acts"><button class="cs-act" data-guard><span class="ic">💵</span><span>Mưa tiền</span></button><button class="cs-act" data-guard><span class="ic">🤝</span><span>Đại lý</span></button><button class="cs-act" data-guard><span class="ic">🎁</span><span>Giới Thiệu Bạn</span></button><button class="cs-act" data-guard><span class="ic">💰</span><span>Hoàn tiền</span></button><button class="cs-act" data-guard><span class="ic">🎫</span><span>Khuyến mãi</span></button><button class="cs-act" data-guard><span class="ic">👑</span><span>VIP Club</span></button><button class="cs-act" data-guard><span class="ic">🏆</span><span>Xếp hạng</span></button></div>
+
+  <div class="cs-banner">
+    <div class="cs-banner-track"><button class="slide" data-guard>KMm</button></div>
+    <span class="dots"><i class="on"></i><i></i><i></i></span>
+  </div>
+
+  <div class="cs-notice">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9.5h3.2L13 5v14l-5.8-4.5H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Z"/><path d="M16.2 8.4a5 5 0 0 1 0 7.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18.6 6a8.4 8.4 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <div class="track"><p>越南测试站点 · Chào mừng đến với 1U.com — nạp lần đầu tặng 100% · Khuyến mãi hoàn tiền mỗi ngày</p></div>
+  </div>
+
+  <div class="cs-wins">
+    <h3>THẮNG LỚN</h3>
+    <div class="row"><div class="cs-win"><span class="th">🧟</span><div class="meta"><div class="amt">₫44</div><div class="gm">Zombie Hunter</div><div class="usr">***XPHIGF</div></div></div><div class="cs-win"><span class="th">🧟</span><div class="meta"><div class="amt">₫55</div><div class="gm">Zombie Hunter</div><div class="usr">***JNZPSE</div></div></div><div class="cs-win"><span class="th">🐯</span><div class="meta"><div class="amt">₫1,208</div><div class="gm">Fortune Tiger</div><div class="usr">***QKM2LD</div></div></div><div class="cs-win"><span class="th">🀄</span><div class="meta"><div class="amt">₫860</div><div class="gm">Mahjong Ways</div><div class="usr">***TRV88P</div></div></div></div>
+  </div>
+
+  <div class="cs-cats"><button class="cs-cat" aria-pressed="true" data-guard><span class="emo">🔥</span><span>Nóng</span></button><button class="cs-cat" aria-pressed="false" data-guard><span class="emo">🎰</span><span>Nổ hũ</span></button><button class="cs-cat" aria-pressed="false" data-guard><span class="emo">🃏</span><span>Live Casino</span></button><button class="cs-cat" aria-pressed="false" data-guard><span class="emo">🎪</span><span>Đá gà</span></button><button class="cs-cat" aria-pressed="false" data-guard><span class="emo">🕹️</span><span>Arcade</span></button><button class="cs-cat" aria-pressed="false" data-guard><span class="emo">🎱</span><span>Lô tô</span></button><button class="cs-cat" aria-pressed="false" data-guard><span class="emo">🎣</span><span>Bắn cá</span></button></div>
+
+  <div class="cs-sec">
+    <span class="fire">🔥</span>
+    <h3>Trò chơi phổ biến</h3>
+    <button class="cs-all" data-guard>TẤT CẢ</button>
+    <button class="cs-arw" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="cs-arw" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+
+  <div class="cs-grid"><button class="cs-game" data-guard><span class="cs-thumb" style="background:linear-gradient(150deg,#E0673A,#A83C1E)"><span class="cs-new">NEW</span><span class="cs-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>⚽</span><span class="nm">SbSports</span></button><button class="cs-game" data-guard><span class="cs-thumb" style="background:linear-gradient(150deg,#C9962F,#7A4B12)"><span class="cs-new">NEW</span><span class="cs-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>🀄<span class="cs-jp">₫797,040.30</span></span><span class="nm">7PK</span></button><button class="cs-game" data-guard><span class="cs-thumb" style="background:linear-gradient(150deg,#3E6B3A,#1C3318)"><span class="cs-new">NEW</span><span class="cs-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>🐓<span class="cs-jp">₫558,220.04</span></span><span class="nm">CockFight</span></button><button class="cs-game" data-guard><span class="cs-thumb" style="background:linear-gradient(150deg,#4B3B8F,#221A4A)"><span class="cs-new">NEW</span><span class="cs-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>🎡<span class="cs-jp">₫581,127.28</span></span><span class="nm">Carnival</span></button><button class="cs-game" data-guard><span class="cs-thumb" style="background:linear-gradient(150deg,#8E2D3A,#3E1218)"><span class="cs-new">NEW</span><span class="cs-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>🎯<span class="cs-jp">₫436,841.82</span></span><span class="nm">Roulette VIP</span></button><button class="cs-game" data-guard><span class="cs-thumb" style="background:linear-gradient(150deg,#2E4E6B,#132433)"><span class="cs-new">NEW</span><span class="cs-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>🃏<span class="cs-jp">₫705,914.22</span><span class="cs-maint">ĐANG BẢO TRÌ</span></span><span class="nm">Baccarat</span></button><button class="cs-game" data-guard><span class="cs-thumb" style="background:linear-gradient(150deg,#C4462B,#5E1A0E)"><span class="cs-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>🐯<span class="cs-jp">₫912,330.55</span></span><span class="nm">Fortune Tiger</span></button><button class="cs-game" data-guard><span class="cs-thumb" style="background:linear-gradient(150deg,#2F7A5A,#123326)"><span class="cs-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>🀅<span class="cs-jp">₫264,110.90</span></span><span class="nm">Mahjong Ways</span></button><button class="cs-game" data-guard><span class="cs-thumb" style="background:linear-gradient(150deg,#B5793A,#4A2C10)"><span class="cs-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>🐱<span class="cs-jp">₫188,455.10</span></span><span class="nm">Lucky Neko</span></button></div>
+</section>
+
+<section class="view" id="view-sports">
+  <div class="sb-filters">
+    <button class="sb-ic" aria-pressed="true" data-guard><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.4 3.1a1 1 0 0 1 1.2 0l8 6.6c.3.3.4.7.2 1.1-.2.3-.5.6-.9.6H19v8a1.8 1.8 0 0 1-1.8 1.8H6.8A1.8 1.8 0 0 1 5 19.4v-8h-.9c-.4 0-.7-.3-.9-.6-.2-.4-.1-.8.2-1.1Z"/></svg></button>
+    <button class="sb-ic" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.4l2.6 5.3 5.9.9-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.6l5.9-.9Z"/></svg></button>
+    <button class="sb-ic" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg></button>
+    <button class="sb-ic" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 8l3.6 3L12 5l4.4 6L20 8l-1.6 10H5.6Z"/></svg></button>
+    <button class="sb-pill" aria-pressed="true" data-guard>Đang diễn ra</button>
+    <button class="sb-pill" data-guard>Hôm nay</button>
+    <button class="sb-pill" data-guard>Sắp diễn ra</button>
+    <button class="sb-pill" data-guard>Cúp</button>
+    <button class="sb-pill" data-guard>Vô địch</button>
+  </div>
+
+  <div class="sb-sports"><button class="sb-sport" aria-pressed="true" data-guard><span class="emo">⚽</span><span class="cnt">678</span></button><button class="sb-sport" aria-pressed="false" data-guard><span class="emo">🏀</span><span class="cnt">1699</span></button><button class="sb-sport" aria-pressed="false" data-guard><span class="emo">🎾</span><span class="cnt">96</span></button><button class="sb-sport" aria-pressed="false" data-guard><span class="emo">⚾</span><span class="cnt">8</span></button><button class="sb-sport" aria-pressed="false" data-guard><span class="emo">🎱</span><span class="cnt">64</span></button><button class="sb-sport" aria-pressed="false" data-guard><span class="emo">🏈</span><span class="cnt">86</span></button><button class="sb-sport" aria-pressed="false" data-guard><span class="emo">🏐</span><span class="cnt">24</span></button><button class="sb-sport" aria-pressed="false" data-guard><span class="emo">🏸</span><span class="cnt">12</span></button></div>
+
+  <div class="sb-feat">
+      <div class="sb-feat-card">
+        <div class="sb-feat-top">
+          <span class="t">23:59</span>
+          <span class="lg">Philippines PBA Commissioner's Cup</span>
+          <button class="sb-count" data-guard>999+ ›</button>
+        </div>
+        <div class="sb-vs">
+          <div><div class="crest">🛡️</div><div class="tm">San Miguel Beer…</div></div>
+          <div class="mid">VS<small>Kèo chấp</small></div>
+          <div><div class="crest">🔰</div><div class="tm">Blackwater Bossing</div></div>
+        </div>
+        <div class="sb-feat-odds"><button class="sb-odd" data-guard><span class="line">+1/1.5</span><span class="val">2.08</span></button><button class="sb-odd" data-guard><span class="line">&minus;1/1.5</span><span class="val">1.82</span></button></div>
+      </div>
+      <div class="sb-feat-card">
+        <div class="sb-feat-top">
+          <span class="t">23:59</span>
+          <span class="lg">V.League 1 — Vòng 18</span>
+          <button class="sb-count" data-guard>999+ ›</button>
+        </div>
+        <div class="sb-vs">
+          <div><div class="crest">🐉</div><div class="tm">Hà Nội FC</div></div>
+          <div class="mid">VS<small>Kèo chấp</small></div>
+          <div><div class="crest">⚓</div><div class="tm">Hải Phòng FC</div></div>
+        </div>
+        <div class="sb-feat-odds"><button class="sb-odd" data-guard><span class="line">+1/1.5</span><span class="val">2.08</span></button><button class="sb-odd" data-guard><span class="line">&minus;1/1.5</span><span class="val">1.82</span></button></div>
+      </div></div>
+
+  <div class="sb-search">
+    <div class="box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+      <input type="search" placeholder="Tìm giải đấu">
+    </div>
+    <button class="tool" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <button class="tool" id="collapseAll"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.5l6-6 6 6"/><path d="M6 18l6-6 6 6"/></svg></button>
+  </div>
+
+    <section class="sb-card">
+      <div class="sb-league-head" data-collapse>
+        <button class="sb-star" aria-pressed="true" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.4l2.6 5.3 5.9.9-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.6l5.9-.9Z"/></svg></button>
+        <span class="sb-league-logo" style="background:linear-gradient(135deg,#3B7DD8,#8E44AD)">WC</span>
+        <span class="nm">World Cup 2026</span>
+        <svg class="sb-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14.5l6-6 6 6"/></svg>
+      </div>
+      
+      <div class="sb-match">
+        <div class="sb-grid">
+          <span class="sb-period">1H 2'</span>
+          <span class="sb-mk">Kèo chấp</span>
+          <span class="sb-mk">Tài/Xỉu</span>
+          <span class="sb-mk">1X2</span>
+
+          <div class="sb-teams"><div class="sb-team"><span class="fl">🇵🇭</span><span class="nm">Philippines</span><span class="sb-card-r">1</span><span class="sb-score">3</span></div><div class="sb-team"><span class="fl">🇲🇾</span><span class="nm">Malaysia</span><span class="sb-card-y">1</span><span class="sb-card-r">2</span><span class="sb-score">1</span></div></div>
+
+          <button class="sb-odd is-on" data-guard><span class="line">+0/0.5</span><span class="val">2.08</span></button>
+          <button class="sb-odd is-lock" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.4"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg></button>
+          <button class="sb-odd up" data-guard><span class="line">Chủ nhà</span><span class="val">2.08</span></button>
+
+          <button class="sb-odd" data-guard><span class="line">&minus;0/0.5</span><span class="val">1.82</span></button>
+          <button class="sb-odd is-lock" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.4"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg></button>
+          <button class="sb-odd down" data-guard><span class="line">Khách</span><span class="val">1.82</span></button>
+
+          <button class="sb-odd sb-draw" data-guard><span class="line">Hòa</span><span class="val">1.82</span></button>
+        </div>
+        <div class="sb-foot">
+          <button class="sb-star" aria-pressed="false" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.4l2.6 5.3 5.9.9-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.6l5.9-.9Z"/></svg></button>
+          <button class="sb-more" data-guard>36 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+          <span class="sb-dots"><i class="on"></i><i class=""></i></span>
+        </div>
+      </div>
+    </section>
+    <section class="sb-card">
+      <div class="sb-league-head" data-collapse>
+        <button class="sb-star" aria-pressed="true" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.4l2.6 5.3 5.9.9-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.6l5.9-.9Z"/></svg></button>
+        <span class="sb-league-logo" style="background:linear-gradient(135deg,#2EA6C7,#1D6FA5)">WG</span>
+        <span class="nm">Thế vận hội mùa đông</span>
+        <svg class="sb-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14.5l6-6 6 6"/></svg>
+      </div>
+      
+      <div class="sb-match">
+        <div class="sb-grid">
+          <span class="sb-period">1H 2'</span>
+          <span class="sb-mk">Kèo chấp</span>
+          <span class="sb-mk">Tài/Xỉu</span>
+          <span class="sb-mk">1X2</span>
+
+          <div class="sb-teams"><div class="sb-team"><span class="fl">🇵🇭</span><span class="nm">Philippines</span><span class="sb-score">3</span></div><div class="sb-team"><span class="fl">🇲🇾</span><span class="nm">Malaysia</span><span class="sb-score">1</span></div></div>
+
+          <button class="sb-odd" data-guard><span class="line">+0/0.5</span><span class="val">2.08</span></button>
+          <button class="sb-odd is-lock" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.4"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg></button>
+          <button class="sb-odd up" data-guard><span class="line">Chủ nhà</span><span class="val">2.08</span></button>
+
+          <button class="sb-odd" data-guard><span class="line">&minus;0/0.5</span><span class="val">1.82</span></button>
+          <button class="sb-odd is-lock" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.4"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg></button>
+          <button class="sb-odd down" data-guard><span class="line">Khách</span><span class="val">1.82</span></button>
+
+          <button class="sb-odd sb-draw" data-guard><span class="line">Hòa</span><span class="val">1.82</span></button>
+        </div>
+        <div class="sb-foot">
+          <button class="sb-star" aria-pressed="false" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.4l2.6 5.3 5.9.9-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.6l5.9-.9Z"/></svg></button>
+          <button class="sb-more" data-guard>36 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+          <span class="sb-dots"><i class="on"></i><i class=""></i></span>
+        </div>
+      </div>
+    </section>
+    <section class="sb-card">
+      <div class="sb-league-head" data-collapse>
+        <button class="sb-star" aria-pressed="true" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.4l2.6 5.3 5.9.9-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.6l5.9-.9Z"/></svg></button>
+        <span class="sb-league-logo" style="background:linear-gradient(135deg,#3D195B,#8E2DE2)">PL</span>
+        <span class="nm">Ngoại hạng Anh</span>
+        <svg class="sb-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14.5l6-6 6 6"/></svg>
+      </div>
+      
+      <div class="sb-match">
+        <div class="sb-grid">
+          <span class="sb-period">1H 2'</span>
+          <span class="sb-mk">Kèo chấp</span>
+          <span class="sb-mk">Tài/Xỉu</span>
+          <span class="sb-mk">1X2</span>
+
+          <div class="sb-teams"><div class="sb-team"><span class="fl">🇻🇳</span><span class="nm">Việt Nam</span><span class="sb-score">2</span></div><div class="sb-team"><span class="fl">🇮🇩</span><span class="nm">Indonesia</span><span class="sb-card-y">1</span><span class="sb-score">0</span></div></div>
+
+          <button class="sb-odd" data-guard><span class="line">+0/0.5</span><span class="val">2.08</span></button>
+          <button class="sb-odd is-lock" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.4"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg></button>
+          <button class="sb-odd up" data-guard><span class="line">Chủ nhà</span><span class="val">2.08</span></button>
+
+          <button class="sb-odd" data-guard><span class="line">&minus;0/0.5</span><span class="val">1.82</span></button>
+          <button class="sb-odd is-lock" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.4"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg></button>
+          <button class="sb-odd down" data-guard><span class="line">Khách</span><span class="val">1.82</span></button>
+
+          <button class="sb-odd sb-draw" data-guard><span class="line">Hòa</span><span class="val">1.82</span></button>
+        </div>
+        <div class="sb-foot">
+          <button class="sb-star" aria-pressed="false" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.4l2.6 5.3 5.9.9-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.6l5.9-.9Z"/></svg></button>
+          <button class="sb-more" data-guard>28 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+          <span class="sb-dots"><i class="on"></i><i class=""></i></span>
+        </div>
+      </div>
+      <div class="sb-match">
+        <div class="sb-grid">
+          <span class="sb-period">HT</span>
+          <span class="sb-mk">Kèo chấp</span>
+          <span class="sb-mk">Tài/Xỉu</span>
+          <span class="sb-mk">1X2</span>
+
+          <div class="sb-teams"><div class="sb-team"><span class="fl">🇵🇭</span><span class="nm">Philippines</span><span class="sb-score">3</span></div><div class="sb-team"><span class="fl">🇲🇾</span><span class="nm">Malaysia</span><span class="sb-score">1</span></div></div>
+
+          <button class="sb-odd" data-guard><span class="line">+0/0.5</span><span class="val">2.08</span></button>
+          <button class="sb-odd is-lock" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.4"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg></button>
+          <button class="sb-odd up" data-guard><span class="line">Chủ nhà</span><span class="val">2.08</span></button>
+
+          <button class="sb-odd" data-guard><span class="line">&minus;0/0.5</span><span class="val">1.82</span></button>
+          <button class="sb-odd is-lock" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.4"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg></button>
+          <button class="sb-odd down" data-guard><span class="line">Khách</span><span class="val">1.82</span></button>
+
+          <button class="sb-odd sb-draw" data-guard><span class="line">Hòa</span><span class="val">1.82</span></button>
+        </div>
+        <div class="sb-foot">
+          <button class="sb-star" aria-pressed="false" data-guard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.4l2.6 5.3 5.9.9-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.6l5.9-.9Z"/></svg></button>
+          <button class="sb-more" data-guard>41 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+          <span class="sb-dots"><i class=""></i><i class="on"></i></span>
+        </div>
+      </div>
+    </section>
+</section>
+
+<p class="copyright">Bản quyền© 2026 1U BẢO LƯU MỌI QUYỀN</p>
+
+<div class="cs-float" id="csFloat">
+  <button class="cs-cs" data-guard aria-label="Hỗ trợ">🎧</button>
+  <button class="cs-gift" data-guard>
+    <div class="hr">24 Giờ</div>
+    <div class="em">🎁</div>
+    <div class="tx">₫3.000<br>thưởng đăng ký</div>
+  </button>
+</div>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="bottom-nav" aria-label="Điều hướng chính">
+  <div class="bottom-nav__bar" role="tablist">
+    <button class="nav-item" role="tab" aria-selected="true" data-tab="casino">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.7"/>
+        <path d="M12 3.5v2.9M12 17.6v2.9M3.5 12h2.9M17.6 12h2.9"/>
+        <path d="M6 6l2 2M18 6l-2 2M6 18l2-2M18 18l-2-2"/>
+      </svg>
+      <span class="lbl">Sòng bạc</span>
+    </button>
+
+    <button class="nav-item" role="tab" aria-selected="false" data-tab="sports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.5"/>
+        <path d="M12 8.1l3.4 2.5-1.3 4h-4.2l-1.3-4L12 8.1Z"/>
+        <path d="M12 3.5v4.6M4.1 10.2l4.5.4M19.9 10.2l-4.5.4M7.3 19.4l2.6-4.8M16.7 19.4l-2.6-4.8"/>
+      </svg>
+      <span class="lbl">Thể thao</span>
+    </button>
+
+    <button class="nav-item nav-item--center" role="tab" aria-selected="false" data-tab="deposit" data-guard>
+      <span class="fab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3.5 8.2A2.2 2.2 0 0 1 5.7 6h11.6a2.2 2.2 0 0 1 2.2 2.2v8.6a2.2 2.2 0 0 1-2.2 2.2H5.7a2.2 2.2 0 0 1-2.2-2.2V8.2Z"/>
+          <path d="M3.5 10.6h4.1a1.9 1.9 0 0 1 0 3.8H3.5"/>
+        </svg>
+      </span>
+      <span class="lbl">Nạp tiền</span>
+    </button>
+
+    <button class="nav-item" role="tab" aria-selected="false" data-tab="promo" data-guard>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="7.5" width="18" height="3.6" rx="1"/>
+        <path d="M4.6 11.1v8.1a1.5 1.5 0 0 0 1.5 1.5h11.8a1.5 1.5 0 0 0 1.5-1.5v-8.1"/>
+        <path d="M12 7.5v13.2"/>
+        <path d="M12 7.5S10.9 3.4 8.6 3.4a2 2 0 0 0 0 4.1H12Z"/>
+        <path d="M12 7.5s1.1-4.1 3.4-4.1a2 2 0 0 1 0 4.1H12Z"/>
+      </svg>
+      <span class="lbl">Khuyến mãi</span>
+    </button>
+
+    <button class="nav-item" role="tab" aria-selected="false" data-tab="mine" data-guard>
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="8" r="4.1"/>
+        <path d="M4.4 20.2c0-3.6 3.4-6 7.6-6s7.6 2.4 7.6 6c0 .6-.5 1-1.1 1H5.5c-.6 0-1.1-.4-1.1-1Z"/>
+      </svg>
+      <span class="lbl">Của tôi</span>
+    </button>
+  </div>
+</nav>
+
+<div class="dr-mask" id="drMask"></div>
+<aside class="drawer" id="drawer" aria-label="Menu">
+  <div class="dr-top">
+    <div class="logo">1<b>U</b>.com</div>
+    <button class="btn-ghost only-guest" data-open-login>Đăng nhập</button>
+    <span class="reg-wrap only-guest">
+      <span class="reg-badge">FREE ₫3.000</span>
+      <button class="btn-gold" data-open-login data-tab-target="register">Đăng ký</button>
+    </span>
+    <div class="balance only-member"><span class="amt">₫960,725.10</span></div>
+    <button class="dr-close" id="drClose" aria-label="Đóng">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+  </div>
+
+  <div class="dr-body">
+    <div class="dr-banners">
+      <button class="dr-banner aff" data-guard><span>ĐẠI LÝ</span><span class="art">💰</span></button>
+      <button class="dr-banner pro" data-guard><span>KHUYẾN MÃI</span><span class="art">🏆</span></button>
+    </div>
+
+    <div class="cs-notice" style="margin:0 0 12px">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9.5h3.2L13 5v14l-5.8-4.5H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Z"/></svg>
+      <div class="track"><p>越南测试站点 · Chào mừng đến với 1U.com</p></div>
+    </div>
+
+    <div class="dr-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+      <input type="search" placeholder="Tìm kiếm">
+    </div>
+
+    <div class="dr-group" data-group="slot"><button class="dr-row" data-goto="casino"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2.2"/><circle cx="10" cy="9" r="1.3"/><circle cx="14" cy="15" r="1.3"/></svg><span class="lb">Nổ hũ</span><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button></div><div class="dr-group" data-group="casino"><button class="dr-row" data-goto="casino"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="3.4"/><path d="M12 3.6v3M12 17.4v3M3.6 12h3M17.4 12h3"/></svg><span class="lb">Sòng bạc</span><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button></div><div class="dr-group" data-group="sports"><button class="dr-row" data-goto="sports"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 8.2l3.3 2.4-1.3 3.9h-4L8.7 10.6Z"/><path d="M12 3.6v4.6M4.2 10.4l4.5.2M19.8 10.4l-4.5.2M7.5 19.2l2.5-4.7M16.5 19.2L14 14.5"/></svg><span class="lb">Thể thao</span><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button></div><div class="dr-group"><button class="dr-row" data-guard><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="2.2"/><path d="M12 3.6v6M12 14.4v6M3.6 12h6M14.4 12h6"/></svg><span class="lb">Xổ số</span><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button></div><div class="dr-group"><button class="dr-row" data-guard><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="3.4" rx="1"/><path d="M5 10.9v8a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-8M12 7.5v12.9"/></svg><span class="lb">Trò chơi thưởng</span><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button></div><div class="dr-group"><button class="dr-row" data-guard><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.4"/><path d="M3.6 12h16.8M12 3.6a13 13 0 0 1 0 16.8 13 13 0 0 1 0-16.8Z"/></svg><span class="lb">Quốc gia</span><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button></div>
+
+    <div class="dr-jp-title">⚡ Giải độc đắc đang diễn ra</div>
+    <button class="dr-jp" data-guard><span class="th">🐼</span><div class="meta"><div class="amt">₫97,00</div><div class="gm">Monkey's Grace</div><div class="usr">***HKFWPV</div></div><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button><button class="dr-jp" data-guard><span class="th">🐼</span><div class="meta"><div class="amt">₫81,00</div><div class="gm">Monkey's Grace</div><div class="usr">***YGWCGT</div></div><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button><button class="dr-jp" data-guard><span class="th">🐼</span><div class="meta"><div class="amt">₫2,00</div><div class="gm">Monkey's Grace</div><div class="usr">***TUTYQY</div></div><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button><button class="dr-jp" data-guard><span class="th">🧟</span><div class="meta"><div class="amt">₫51,00</div><div class="gm">Zombie Hunter</div><div class="usr">***XPHIGF</div></div><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button>
+  </div>
+</aside>
+
+<!-- ============ LOGIN SHEET ============ -->
+<div class="mask" id="mask" role="dialog" aria-modal="true" aria-label="Đăng nhập">
+  <div class="sheet">
+    <button class="sheet-close" id="sheetClose" aria-label="Đóng">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+
+    <h2>Thưởng người dùng mới, nhận lên đến <em>₫3000</em></h2>
+
+    <div class="steps">
+      <div class="step done"><span class="dot">1</span><span class="cap">Đăng ký</span></div>
+      <div class="step"><span class="dot">2</span><span class="cap">Nhập số điện thoại</span></div>
+      <div class="step"><span class="dot gift">🎁</span><span class="cap">Nhận <b>₫3000</b></span></div>
+    </div>
+
+    <div class="seg" role="tablist">
+      <button role="tab" aria-selected="false" data-auth-tab="register">Đăng ký</button>
+      <button role="tab" aria-selected="true" data-auth-tab="login">Đăng nhập</button>
+    </div>
+
+    <div class="field">
+      <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.6h2"/></svg>
+      <span class="cc">+84</span>
+      <span class="sep"></span>
+      <input id="phone" type="tel" inputmode="numeric" placeholder="Số điện thoại" value="9288 881 88">
+      <button class="tail" id="clearPhone" aria-label="Xóa">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm3.5 12.1-1.4 1.4L12 13.4l-2.1 2.1-1.4-1.4L10.6 12 8.5 9.9l1.4-1.4L12 10.6l2.1-2.1 1.4 1.4L13.4 12Z"/></svg>
+      </button>
+    </div>
+
+    <div class="field">
+      <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <input id="pwd" type="password" placeholder="Mật khẩu" value="123456">
+      <button class="tail" id="togglePwd" aria-label="Hiện mật khẩu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.8"/><path d="M3.5 3.5l17 17"/></svg>
+      </button>
+    </div>
+
+    <a class="forgot" href="#" onclick="return false">Quên mật khẩu?</a>
+
+    <button class="submit" id="doLogin">Đăng nhập</button>
+
+    <div class="or">hoặc</div>
+    <div class="social">
+      <button aria-label="Google">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.4Z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2L6.4 14Z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.8-2.8A10 10 0 0 0 3.1 7.4L6.4 10c.8-2.3 3-4.1 5.6-4.1Z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const body = document.body;
+const mask = document.getElementById('mask');
+
+/* ---- login sheet ---- */
+var openLogin = function(tab){
+  if(tab) setAuthTab(tab);
+  mask.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+};
+function closeLogin(){
+  mask.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+document.getElementById('sheetClose').addEventListener('click', closeLogin);
+mask.addEventListener('click', e => { if(e.target === mask) closeLogin(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLogin(); });
+
+function setAuthTab(which){
+  document.querySelectorAll('[data-auth-tab]').forEach(b =>
+    b.setAttribute('aria-selected', String(b.dataset.authTab === which)));
+  document.getElementById('doLogin').textContent = which === 'register' ? 'Đăng ký' : 'Đăng nhập';
+}
+document.querySelectorAll('[data-auth-tab]').forEach(b =>
+  b.addEventListener('click', () => setAuthTab(b.dataset.authTab)));
+
+document.getElementById('doLogin').addEventListener('click', () => {
+  setAuth('member');
+  closeLogin();
+});
+
+/* ---- auth state ---- */
+function setAuth(state){
+  body.dataset.auth = state;
+}
+
+/* ---- guest guard: mọi thao tác đều mở đăng nhập ---- */
+document.addEventListener('click', e => {
+  if(body.dataset.auth !== 'guest') return;
+  const t = e.target.closest('[data-guard]');
+  if(!t) return;
+  e.preventDefault();
+  e.stopPropagation();
+  openLogin('login');
+}, true);
+
+document.querySelectorAll('[data-open-login]').forEach(b =>
+  b.addEventListener('click', () => openLogin(b.dataset.tabTarget || 'login')));
+
+/* ---- bottom nav ---- */
+const navItems = document.querySelectorAll('.nav-item');
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const tab = item.dataset.tab;
+    if(tab !== 'casino' && tab !== 'sports') return;
+    navItems.forEach(i => i.setAttribute('aria-selected','false'));
+    item.setAttribute('aria-selected','true');
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
+    document.getElementById('view-' + tab).classList.add('is-active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+/* ---- field helpers ---- */
+document.getElementById('clearPhone').addEventListener('click', () => {
+  document.getElementById('phone').value = '';
+  document.getElementById('phone').focus();
+});
+document.getElementById('togglePwd').addEventListener('click', () => {
+  const p = document.getElementById('pwd');
+  p.type = p.type === 'password' ? 'text' : 'password';
+});
+
+
+/* ---- sportsbook interactions ---- */
+document.querySelectorAll('[data-collapse]').forEach(h => {
+  h.addEventListener('click', e => {
+    if(e.target.closest('.sb-star')) return;
+    h.closest('.sb-card').classList.toggle('is-collapsed');
+  });
+});
+const collapseAll = document.getElementById('collapseAll');
+if(collapseAll){
+  collapseAll.addEventListener('click', () => {
+    const cards = document.querySelectorAll('#view-sports .sb-card');
+    const anyOpen = [...cards].some(c => !c.classList.contains('is-collapsed'));
+    cards.forEach(c => c.classList.toggle('is-collapsed', anyOpen));
+  });
+}
+document.querySelectorAll('#view-sports .sb-odd').forEach(o => {
+  o.addEventListener('click', () => {
+    if(body.dataset.auth === 'guest' || o.classList.contains('is-lock')) return;
+    const wasOn = o.classList.contains('is-on');
+    o.closest('.sb-grid, .sb-feat-odds').querySelectorAll('.sb-odd').forEach(x => x.classList.remove('is-on'));
+    if(!wasOn) o.classList.add('is-on');
+  });
+});
+document.querySelectorAll('#view-sports .sb-star, #view-sports .sb-pill, #view-sports .sb-ic, #view-sports .sb-sport').forEach(b => {
+  b.addEventListener('click', () => {
+    if(body.dataset.auth === 'guest') return;
+    if(b.classList.contains('sb-star')){
+      b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+      return;
+    }
+    const scope = b.classList.contains('sb-sport') ? '.sb-sports' : '.sb-filters';
+    const sel = b.classList.contains('sb-sport') ? '.sb-sport'
+              : (b.classList.contains('sb-pill') ? '.sb-pill' : '.sb-ic');
+    b.closest(scope).querySelectorAll(sel).forEach(x => x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+  });
+});
+
+/* ---- casino interactions ---- */
+document.querySelectorAll('.cs-cat').forEach(c => {
+  c.addEventListener('click', () => {
+    if(body.dataset.auth === 'guest') return;
+    document.querySelectorAll('.cs-cat').forEach(x => x.setAttribute('aria-pressed','false'));
+    c.setAttribute('aria-pressed','true');
+  });
+});
+const csFloat = document.getElementById('csFloat');
+function syncFloat(){
+  const onCasino = document.getElementById('view-casino').classList.contains('is-active');
+  csFloat.style.display = onCasino ? 'flex' : 'none';
+}
+navItems.forEach(i => i.addEventListener('click', syncFloat));
+syncFloat();
+
+/* ---- left drawer ---- */
+const drawer = document.getElementById('drawer');
+const drMask = document.getElementById('drMask');
+function openDrawer(){ drawer.classList.add('is-open'); drMask.classList.add('is-open'); document.body.style.overflow='hidden'; }
+function closeDrawer(){ drawer.classList.remove('is-open'); drMask.classList.remove('is-open'); document.body.style.overflow=''; }
+document.querySelector('.burger').addEventListener('click', openDrawer);
+document.getElementById('drClose').addEventListener('click', closeDrawer);
+drMask.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeDrawer(); });
+
+/* switch main view from a nav source */
+function gotoView(tab){
+  const target = document.querySelector('.nav-item[data-tab="' + tab + '"]');
+  if(target) target.click();
+}
+function syncDrawerActive(){
+  const tab = document.getElementById('view-sports').classList.contains('is-active') ? 'sports' : 'casino';
+  document.querySelectorAll('.dr-group[data-group]').forEach(g => {
+    g.classList.toggle('is-active', g.dataset.group === tab);
+  });
+}
+
+/* 一级栏目：直接切换主视图并收起抽屉 */
+document.querySelectorAll('.drawer [data-goto]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    gotoView(btn.dataset.goto);
+    syncDrawerActive();
+    closeDrawer();
+  });
+});
+
+navItems.forEach(i => i.addEventListener('click', syncDrawerActive));
+syncDrawerActive();
+
+/* opening login from inside the drawer closes it */
+document.querySelectorAll('.drawer [data-open-login]').forEach(b =>
+  b.addEventListener('click', closeDrawer));
+const _openLogin = openLogin;
+openLogin = function(tab){ closeDrawer(); _openLogin(tab); };
+</script>
+</body>
+</html>
